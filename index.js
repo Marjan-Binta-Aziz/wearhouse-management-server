@@ -30,6 +30,18 @@ async function run(){
                 const query = { _id: ObjectId(id)};
                 const item = await itemCollection.findOne(query);
                 res.send(item);
+            });
+
+            app.post('/inventory', async(req, res)=> {
+                const newItem = req.body;
+                const item = await itemCollection.insertOne(newItem);
+                res.send(item)
+            });
+            app.delete('/inventory/:id', async(req, res) =>{
+                const id = req.params.id;
+                const query = {_id: ObjectId(id)};
+                const result = await itemCollection.deleteOne(query);
+                res.send(result);
             })
     }
     finally{}
