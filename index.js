@@ -18,6 +18,8 @@ async function run(){
     try{
             await client.connect();
             const itemCollection = client.db('dbWarehouse').collection('item');
+            const myItemsCollection = client.db('dbWarehouse').collection('myItems');
+
             app.get('/inventory', async(req, res) =>{
                 const query = {};
                 const cursor = itemCollection.find(query);
@@ -42,7 +44,22 @@ async function run(){
                 const query = {_id: ObjectId(id)};
                 const result = await itemCollection.deleteOne(query);
                 res.send(result);
-            })
+            });
+            app.get('/myitems', async(req, res) => {
+                const email = req.query.email;
+                console.log(email);
+                const query = {email: email};
+                const cursor = itemCollection.find(query);
+                const myItems = await cursor.toArray() ;
+                res.send(myItems);
+            });
+            app.delete('/myitems/:id', async(req, res) =>{
+                const id = req.params.id;
+                const query = {_id: ObjectId(id)};
+                const result = await itemCollection.deleteOne(query);
+                res.send(result);
+            });
+        
     }
     finally{}
 }
