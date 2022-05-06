@@ -18,7 +18,6 @@ async function run(){
     try{
             await client.connect();
             const itemCollection = client.db('dbWarehouse').collection('item');
-            const myItemsCollection = client.db('dbWarehouse').collection('myItems');
 
             app.get('/inventory', async(req, res) =>{
                 const query = {};
@@ -37,7 +36,7 @@ async function run(){
             app.post('/inventory', async(req, res)=> {
                 const newItem = req.body;
                 const item = await itemCollection.insertOne(newItem);
-                res.send(item)
+                res.send(item);
             });
             app.delete('/inventory/:id', async(req, res) =>{
                 const id = req.params.id;
