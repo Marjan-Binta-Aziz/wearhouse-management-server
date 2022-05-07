@@ -49,6 +49,7 @@ async function run(){
                 res.send(item);
             });
 
+            //for delivered
             app.put('/inventory/:id', async(req, res) => {
                 const id = req.params.id;
                 const delivered = req.body;
@@ -62,6 +63,24 @@ async function run(){
                 const result = await itemCollection.updateOne(filter, updateDoc, options)
                 res.send(result);
             })
+
+            //for restock
+            app.put('/restock/:id', async(req, res) => {
+                const id = req.params.id;
+                const restock = req.body;
+                const filter = {_id: ObjectId(id)};
+                const options = { upsert: true};
+                const updateDoc = {
+                $set:{
+                    quantity: restock.quantity
+                    },
+                }
+                const result = await itemCollection.updateOne(filter, updateDoc, options)
+                res.send(result)
+                console.log(result)
+            })
+            
+
 
             app.delete('/inventory/:id', async(req, res) =>{
                 const id = req.params.id;
