@@ -50,7 +50,7 @@ async function run(){
             });
 
             //for delivered
-            app.put('/inventory/:id', async(req, res) => {
+            app.put('/delivered/:id', async(req, res) => {
                 const id = req.params.id;
                 const delivered = req.body;
                 const filter = {_id: ObjectId(id)};
