@@ -1,7 +1,8 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
-const app = express();
 const cors = require('cors');
+const app = express();
+const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
 require('dotenv').config();
 
@@ -18,6 +19,15 @@ async function run(){
     try{
             await client.connect();
             const itemCollection = client.db('dbWarehouse').collection('item');
+
+            // auth for token 
+        app.post('/login',async(req, res)=>{
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, {
+                expiresIn: '1d'
+            });
+            res.send({accessToken});
+        });
 
             app.get('/inventory', async(req, res) =>{
                 const query = {};
@@ -38,12 +48,28 @@ async function run(){
                 const item = await itemCollection.insertOne(newItem);
                 res.send(item);
             });
+
+            app.put('/inventory/:id', async(req, res) => {
+                const id = req.params.id;
+                const delivered = req.body;
+                const filter = {_id: ObjectId(id)};
+                const options = { upsert: true};
+                const updateDoc = {
+                    $set:{
+                        quantity: delivered.quantity
+                    },
+                };
+                const result = await itemCollection.updateOne(filter, updateDoc, options)
+                res.send(result);
+            })
+
             app.delete('/inventory/:id', async(req, res) =>{
                 const id = req.params.id;
                 const query = {_id: ObjectId(id)};
                 const result = await itemCollection.deleteOne(query);
                 res.send(result);
             });
+            
             app.get('/myitems', async(req, res) => {
                 const email = req.query.email;
                 console.log(email);
