@@ -96,6 +96,7 @@ async function run(){
             })
             
 
+
             app.delete('/inventory/:id', async(req, res) =>{
                 const id = req.params.id;
                 const query = {_id: ObjectId(id)};
@@ -115,6 +116,14 @@ async function run(){
                 } 
             });
 
+            // app.get('/myitems', async(req, res) => {
+            //     const email = req.query.email;
+            //     console.log(email);
+            //     const query = {email: email};
+            //     const cursor = itemCollection.find(query);
+            //     const myItems = await cursor.toArray() ;
+            //     res.send(myItems);
+            // });
         
     }
     finally{}
