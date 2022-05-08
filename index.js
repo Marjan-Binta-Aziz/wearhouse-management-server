@@ -15,6 +15,21 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASS}@cluster0.wntwp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+function verifyJWT(req,res, next) {
+    const authHeaders = req.headers.authorization;
+    if (!authHeaders) {
+        return res.status(401).send({message: 'Unauthorized Access'})
+    }
+    const token = authHeaders.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({message: 'Forbidden Access'})
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
+
 async function run(){
     try{
             await client.connect();
@@ -89,13 +104,20 @@ async function run(){
                 res.send(result);
             });
             
-            app.get('/myitems', async(req, res) => {
+            app.get('/myitems', verifyJWT, async(req, res) => {
+                const decodedEmail = req.decoded.email;
                 const email = req.query.email;
+                if (email) {
+                    const email = req.query.email;
                 console.log(email);
                 const query = {email: email};
                 const cursor = itemCollection.find(query);
                 const myItems = await cursor.toArray() ;
                 res.send(myItems);
+                } else{
+                    return res.status(401).send({message: 'Forbidden Access'})
+                }
+                
             });
             app.delete('/myitems/:id', async(req, res) =>{
                 const id = req.params.id;
