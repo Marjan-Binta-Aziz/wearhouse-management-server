@@ -23,7 +23,7 @@ function verifyJWT(req,res, next) {
     const token = authHeaders.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
         if (err) {
-            return res.status(401).send({message: 'Forbidden Access'})
+            return res.status(403).send({message: 'Forbidden Access'})
         }
         req.decoded = decoded;
         next();
@@ -104,26 +104,25 @@ async function run(){
                 res.send(result);
             });
             
-            app.get('/myitems', verifyJWT, async(req, res) => {
-                const decodedEmail = req.decoded.email;
-                const email = req.query.email;
-                if (email) {
+            // app.get('/myitems', verifyJWT, async(req, res) => {
+            //     const decodedEmail = req.decoded.email;
+            //     const email = req.query.email;
+            //     if (email === decodedEmail) {
+            //     console.log(email);
+            //     const query = {email: email};
+            //     const cursor = itemCollection.find(query);
+            //     const myItems = await cursor.toArray() ;
+            //     res.send(myItems);
+            //     } 
+            // });
+
+            app.get('/myitems', async(req, res) => {
                 const email = req.query.email;
                 console.log(email);
                 const query = {email: email};
                 const cursor = itemCollection.find(query);
                 const myItems = await cursor.toArray() ;
                 res.send(myItems);
-                } else{
-                    return res.status(401).send({message: 'Forbidden Access'})
-                }
-                
-            });
-            app.delete('/myitems/:id', async(req, res) =>{
-                const id = req.params.id;
-                const query = {_id: ObjectId(id)};
-                const result = await itemCollection.deleteOne(query);
-                res.send(result);
             });
         
     }
