@@ -108,7 +108,7 @@ async function run(){
                 const decodedEmail = req.decoded.email;
                 const email = req.query.email;
                 if (email) {
-                    const email = req.query.email;
+                const email = req.query.email;
                 console.log(email);
                 const query = {email: email};
                 const cursor = itemCollection.find(query);
