@@ -34,6 +34,7 @@ function verifyJWT(req,res, next) {
 async function run(){
     try{
             // await client.connect(); not need for vercel
+            // await client.connect(); 
             const itemCollection = client.db('dbWarehouse').collection('item');
 
             // auth for token 
